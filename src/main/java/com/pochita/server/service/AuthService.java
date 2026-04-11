@@ -87,10 +87,7 @@ public class AuthService {
         String avatarEmoji = pickGoogleAvatar(email);
 
         return userRepository.findByEmail(email)
-                .map(existingUser -> {
-                    existingUser.syncGoogleProfile(nickname, avatarEmoji);
-                    return userRepository.save(existingUser);
-                })
+                .map(existingUser -> existingUser)
                 .orElseGet(() -> userRepository.save(new User(
                         IdGenerator.newId(),
                         email,
