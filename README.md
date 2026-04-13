@@ -9,7 +9,8 @@ Spring Boot backend for the Pochita app.
 - Spring Web
 - Spring Data JPA
 - Spring Validation
-- H2 database
+- H2 database for local development
+- PostgreSQL for persistent production deployments
 
 ## What It Covers
 
@@ -69,6 +70,7 @@ Or generate a Gradle wrapper and run:
 ```
 
 The API listens on `http://localhost:8080` and allows CORS from `http://localhost:3000`.
+Locally it falls back to H2. In production it will automatically use PostgreSQL when `PGHOST`-style variables or `SPRING_DATASOURCE_URL` / `JDBC_DATABASE_URL` are present.
 
 ## Docker
 
