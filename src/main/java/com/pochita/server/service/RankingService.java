@@ -4,6 +4,7 @@ import com.pochita.server.domain.DistractionSession;
 import com.pochita.server.domain.GroupMember;
 import com.pochita.server.domain.StudyGroup;
 import com.pochita.server.domain.User;
+import com.pochita.server.common.UniversityNormalizer;
 import com.pochita.server.dto.RankingDtos.CategoryLeaderEntry;
 import com.pochita.server.dto.RankingDtos.RankingEntry;
 import com.pochita.server.dto.RankingDtos.UserStatsResponse;
@@ -58,7 +59,7 @@ public class RankingService {
         for (DistractionSession session : sessionService.getCompletedSessions()) {
             User user = users.stream().filter(candidate -> candidate.getId().equals(session.getUserId())).findFirst().orElse(null);
             if (user == null || user.getUniversity().isBlank() || session.getDuration() == null) continue;
-            totals.merge(user.getUniversity(), session.getDuration(), Long::sum);
+            totals.merge(UniversityNormalizer.normalize(user.getUniversity()), session.getDuration(), Long::sum);
         }
         return totals.entrySet().stream()
                 .map(entry -> new RankingEntry(entry.getKey(), entry.getKey(), null, entry.getValue(), entry.getValue() / 60, 0))

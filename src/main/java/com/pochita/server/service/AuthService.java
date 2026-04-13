@@ -3,6 +3,7 @@ package com.pochita.server.service;
 import com.pochita.server.common.ApiException;
 import com.pochita.server.common.IdGenerator;
 import com.pochita.server.common.PasswordHasher;
+import com.pochita.server.common.UniversityNormalizer;
 import com.pochita.server.domain.AuthProvider;
 import com.pochita.server.domain.User;
 import com.pochita.server.dto.AuthDtos.GoogleLoginRequest;
@@ -37,7 +38,7 @@ public class AuthService {
                 PasswordHasher.hash(request.password()),
                 AuthProvider.CREDENTIALS,
                 request.nickname().trim(),
-                request.university().trim(),
+                UniversityNormalizer.normalize(request.university()),
                 request.major().trim(),
                 request.year().trim(),
                 request.avatarEmoji().trim(),
@@ -111,12 +112,28 @@ public class AuthService {
         User user = getUser(userId);
         user.updateProfile(
                 request.nickname().trim(),
-                request.university().trim(),
+                UniversityNormalizer.normalize(request.university()),
                 request.major().trim(),
                 request.year().trim(),
                 request.avatarEmoji().trim()
         );
         return userRepository.save(user);
+    }
+
+    public void normalizeExistingUniversities() {
+        userRepository.findAll().forEach(user -> {
+            String normalized = UniversityNormalizer.normalize(user.getUniversity());
+            if (!normalized.equals(user.getUniversity())) {
+                user.updateProfile(
+                        user.getNickname(),
+                        normalized,
+                        user.getMajor(),
+                        user.getYear(),
+                        user.getAvatarEmoji()
+                );
+                userRepository.save(user);
+            }
+        });
     }
 
     private User ensureTestUser() {

@@ -10,6 +10,9 @@ public class SeedDataConfig {
 
     @Bean
     CommandLineRunner seedDemoUsers(AuthService authService) {
-        return args -> authService.ensureGoogleDemoUser();
+        return args -> {
+            authService.ensureGoogleDemoUser();
+            authService.normalizeExistingUniversities();
+        };
     }
 }
